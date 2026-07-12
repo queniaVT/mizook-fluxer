@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@fluxerjs/core": "^2.0.0",
+    "undici": "^6.23.0"
+  },
+  "type": "module"
+}
