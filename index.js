@@ -8,6 +8,7 @@ import {
 	User,
 } from '@fluxerjs/core';
 import fs from 'node:fs';
+import stripAnsi from 'strip-ansi';
 
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 const token = config.token;
@@ -38,11 +39,11 @@ client.on(Events.MessageCreate, async (message) => {
 	if (message.channel.id === mizookChannel) {
 		// check for commands
 		try {
-			if (command === "ignore" || command === "i") {
-				return;
+			if (!command === "ignore" || !command === "i") {
+				return; // replace with llm connection stuffz
 			};
 		} catch (err) {
-			console.error("command error: ", err);
+			console.error("command error:\n", err);
 			reply(message, "something got fucked up").catch(() => {});
 		};
 	} else {
@@ -51,8 +52,78 @@ client.on(Events.MessageCreate, async (message) => {
 			if (command === "hi") {
 				reply(message, "HAIIII :3 im mizook! <(^V^)>");
 			};
+			if (command === "start") {
+				console.log("command used: /start");
+       				exec("/run/wrappers/bin/sudo /run/current-system/sw/bin/systemctl start mcservurr",  (err, stdout, stderr) => {
+      					if (err){
+                				console.log("sysctl start mcservurr: exec error:\n", err);
+              				  	reply(message, "something got fucked up");
+      					} else {
+        				        reply(message, "startin teh servurr...");
+        			    	};
+ 	       			});
+			};
+			if (command === "restart") {
+				console.log("command used: /restart");
+				exec("/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd list | grep -oP 'There are \\K\\d+'", (err, stdout, stderr) => {
+					if (err) {
+						console.log("mcrcon list: exec error:\n", err);
+						reply(message, "something got fucked up");
+					} else if (stdout.trim() === "0") {
+						exec("/run/wrappers/bin/sudo /run/current-system/sw/bin/systemctl restart mcservurr",  (err, stdout, stderr) => {
+							if (err) {
+								console.log("sysctl restart mcservurr: exec error:\n", err);
+								reply(message, "something got fucked up");
+							} else {
+								reply(message, "restartin teh servurr...");
+							};
+						});
+					} else {
+						reply(message, "cannot restart servurr, " + stdout.trim() + " people online");
+					};
+				});
+			};
+			if (command === "stop") {
+				console.log("command used: /stop");
+				exec("/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd list | grep -oP 'There are \\K\\d+'", (err, stdout, stderr) => {
+					if (err) {
+						console.log("mcrcon list: exec error:\n", err);
+						reply(message, "something got fucked up");
+					} else if (stdout.trim() === "0") {
+						exec("/run/wrappers/bin/sudo /run/current-system/sw/bin/systemctl stop mcservurr",  (err, stdout, stderr) => {
+							if (err) {
+								console.log("sysctl stop mcservurr: exec error:\n", err);
+								reply(message, "something got fucked up");
+							} else {
+								reply(message, "stoppin teh servurr...");
+							};
+						});
+					} else {
+						reply(message, "cannot stop servurr, " + stdout.trim() + " people online");
+					};
+				});
+			};
+			if (command === "status") {
+				console.log("command used: /status");
+				exec("/run/wrappers/bin/sudo /run/current-system/sw/bin/systemctl status mcservurr | head -3 | tail -1",  (err, stdout, stderr) => {
+					if (err) {
+						console.log("sysctl status mcservurr: exec error:\n", err);
+						reply(message, "something got fucked up");
+					} else {
+						const out = stdout.trim().slice(8);
+						exec("/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd list | sed -n 's/.*: //p'", (err, stdout, stderr) => {
+							if (err) {
+								console.log("mcrcon list: exec error:\n", err);
+								reply(message, "something got fucked up");
+							} else {
+								reply(message, out + "\nPlayers online:\n" + stripAnsi(stdout));
+							};
+						});
+					};
+				});
+			};
 		} catch (err) {
-			console.error("command error: ", err);
+			console.error("command error:\n", err);
 			reply(message, "something got fukced up").catch(() => {});
 		};
 		// check for trigger words
