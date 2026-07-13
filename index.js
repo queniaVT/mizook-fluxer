@@ -9,6 +9,7 @@ import {
 } from '@fluxerjs/core';
 import fs from 'node:fs';
 import stripAnsi from 'strip-ansi';
+import {exec} from 'child_process';
 
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 const token = config.token;
