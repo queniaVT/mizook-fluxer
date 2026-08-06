@@ -11,7 +11,7 @@ import fs from 'node:fs';
 import stripAnsi from 'strip-ansi';
 import {exec} from 'child_process';
 
-const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
+const config = JSON.parse(fs.readFileSync('./.env', 'utf8'));
 const token = config.token;
 const client = new Client({intents: 0});
 
