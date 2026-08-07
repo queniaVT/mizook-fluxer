@@ -33,10 +33,36 @@ const roleMessages = [
 	{
 		content: "do you want to participate in the council and vote on server changes? (recommended) :3",
 		mapping: {"✅": "1525586466908930051"} // councilor
+	},
+	{
+		content: "do you wanna talk to mizook? :3",
+		mapping: {"✅": "1525586466908930050"} // mizook enjoyer
+	},
+	{
+		content: "what games do you wanna discuss?\n<:minecraft:1526056839312052224> - minecraft\nyou can suggest more games in the council :3",
+		mapping: {
+			"<:minecraft:1526056839312052224>": "1525586466908930049"
+		}
+	},
+	{
+		content: "u can chooze ur labelz heer\n<:bisexual:1525588214352449536> - bisexual\n<:femboy:1525588214352449537> - femboy\n<:lesbian:1525588214352449538> - lesbian\n<:transgender:1525588214352449539> - transgender\nif ur label iznt heer u can suggest it in da council :3",
+		mapping: {
+			"<:bisexual:1525588214352449536>": "1525586466908930055",
+			"<:femboy:1525588214352449537>": "1525586466908930054",
+			"<:lesbian:1525588214352449538>": "1525586466908930053",
+			"<:transgender:1525588214352449539>": "1525586466908930052"
+		}
 	}
-]
+];
 
 let store = {}; // { guildId: { messageId: { emoji: roleId, ... }, ... }, ... }
+
+client.on(Events.MessageReactionAdd, async (payload) => {
+	handleRoleChange(payload.reaction, payload.user, true);
+});
+client.on(Events.MessageReactionRemove, async (payload) => {
+	handleRoleChange(payload.reaction, payload.user, false);
+});
 
 client.on(Events.Ready, async () => {
 	console.log(`Logged in as ${client.user?.username}`);
@@ -46,7 +72,7 @@ client.on(Events.Ready, async () => {
 
 async function loadStore(){try {store = JSON.parse(await fs.readFile(storage, 'utf8'));} catch {store = {};}}
 async function saveStore(){await fs.writeFile(storage, JSON.stringify(store, null, 2));}
-function emojiKeyFromEmojiObj(e){return e.id ? `<:${e.name}:${e.id}>` : e.name;}
+function emojiKeyFromEmojiObj(e){return e.id ? `<:${e.name}:${e.id}>` : e.name;} // when is this even called
 
 async function send(message, text) {await message.send(text + sig);};
 async function reply(message, text) {await message.reply(text + sig);};
@@ -69,6 +95,27 @@ async function ensurePredefinedMessages(){
 		store[msg.guildId][msg.id] = {...def.mapping}; // also i should add a thing that removes old msgs from the rrstore
 	}
 	await saveStore();
+}
+
+async function handleRoleChange(reaction, user, add){
+	if (user.bot) return;
+	const guild = reaction.guild;
+	if (!guild) return;
+	const gstore = store["null"];
+	if (!gstore) return;
+	const msgMap = gstore[reaction.messageId];
+	if (!msgMap) return;
+	const key = reaction.emoji.id ? `<:${reaction.emoji.name}:${reaction.emoji.id}>` : reaction.emoji.name;
+	const roleId = msgMap[key];
+	if (!roleId) return;
+	const member = await guild?.fetchMember(user.id);
+	if (!member) return;
+	try {
+		if (add) await member.roles.add(roleId);
+		else await member.roles.remove(roleId);
+	} catch (err){
+		console.error("role change error", err);
+	}
 }
 
 client.on(Events.MessageCreate, async (message) => {
