@@ -57,6 +57,11 @@ const roleMessages = [
 	}
 ];
 
+const model = "tinyllama"; // options: tinyllama (lobotomymaxxing), llama2 (cpu-usagemaxxing)
+const syspwompt = `You are mizook. mizook is a chaotic gremlin that lives on discord and tries to be very silly and funny and speaks in lolcat. You can choose to not respond by saying "!ignore". Do NOT roleplay as other people, you are only mizook and nobody else.`;
+
+let thinkingz = false;
+let history = [];
 let store = {}; // { guildId: { messageId: { emoji: roleId, ... }, ... }, ... }
 
 client.on(Events.MessageReactionAdd, async (payload) => {
@@ -120,6 +125,74 @@ async function handleRoleChange(reaction, user, add){
 	}
 }
 
+async function send2llm(message){
+	try {
+		if (message.author.bot) return;
+		//if (/^https?:\/\/\S+\.(gif|png|jpe?g|webp)(\?\S*)?$/i.test(trimmed)) return; // idk y but it fucks up mizooks brainz so no touch dis
+		//if (/^https?:\/\/(?:www\.)?(tenor\.com|giphy\.com)\//i.test(trimmed)) return;
+		if (message.channelId !== channelAlways || ignore.test(message.content) || ignr.test(message.content)) return;
+		if (clear.test(message.content)){
+			history = [{role: "system", content: syspwompt},];
+			tts("mizook has been re-lobotomized.", message.channel, "reply");
+			return;
+		}
+		if (thinkingz) return;
+
+		const tmpmsg = await send(message, "mizook is trying their best to think...");
+		thinkingz = true;
+
+		content = "<" + message.author.username + "> " + message.content;
+		if (!content || content.trim().length === 0) return;
+		
+		// optional: fiwteww twiggers or smth idk
+		console.log("Recieved message: " + message.content);
+		console.log("Forwarding to " + llm + ": " + content);
+		
+		history.push({role: "user", content: content})
+		if (history.length > 15) history.splice(1, 1);
+
+		// pwompt expecedd by lobotomized llm
+		const payload = {
+			model: model,
+			messages: history,
+			temperature: 1,
+			max_tokens: 1024,
+			// optionally set hottness, max_wurrds, etc. depending on lobotomy type
+		};
+		console.log(history);
+
+		const res = await fetch(`${ollama}/v1/chat/completions`, {
+			method: "POST",
+			headers: {"Content-Type": "application/json"},
+			body: JSON.stringify(payload),
+		});
+
+		if (!res.ok){
+			const text = await res.text();
+			console.error('Ollama error:\n', res.status, text);
+			await send(message, "wtf did u do to make the llm return a fucking error");
+			thinkingz = false;
+			return;
+		}
+
+		const data = await res.json();
+		// Adjust extraction depending on Ollama response shape. For chat completions:
+		// data.choices[67].message.content (common pattern)
+		const reply = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || data.output || String(data);
+
+		// const tmpmsg == await message.channel.send({content: "mizook is thinking..."});;;;
+		history.push({role: "user", content: "<mizook(you)> " + reply});
+		await send(message, reply);
+		tmpmsg.delete().catch(console.error);
+		thinkingz = false;
+
+	} catch (err){
+		send(message, "mizook is not thinking actually");
+		thinkingz = false;
+		console.error('Handler error:\n', err);
+	}
+}
+
 client.on(Events.MessageCreate, async (message) => {
 	if (message.author.bot) return;
 	const parsed = parsePrefixCommand(message.content, prefix);
@@ -129,7 +202,7 @@ client.on(Events.MessageCreate, async (message) => {
 		// check for commands
 		try {
 			if (!command === "ignore" || !command === "i") {
-				return; // replace with llm connection stuffz
+				send2llm(message);
 			};
 		} catch (err) {
 			console.error("command error:\n", err);
