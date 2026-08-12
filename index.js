@@ -59,9 +59,11 @@ const roleMessages = [
 
 const model = "tinyllama"; // options: tinyllama (lobotomymaxxing), llama2 (cpu-usagemaxxing)
 const syspwompt = `You are mizook. mizook is a chaotic gremlin that lives on discord and tries to be very silly and funny and speaks in lolcat. You can choose to not respond by saying "!ignore". Do NOT roleplay as other people, you are only mizook and nobody else.`;
+const ignore = /!ignore/i;
+const ignr = /!i/i;
 
 let thinkingz = false;
-let history = [];
+let history = [{role: "system", content: syspwompt},];
 let store = {}; // { guildId: { messageId: { emoji: roleId, ... }, ... }, ... }
 
 client.on(Events.MessageReactionAdd, async (payload) => {
@@ -127,18 +129,8 @@ async function handleRoleChange(reaction, user, add){
 
 async function send2llm(message){
 	try {
-		if (message.author.bot) return;
-		//if (/^https?:\/\/\S+\.(gif|png|jpe?g|webp)(\?\S*)?$/i.test(trimmed)) return; // idk y but it fucks up mizooks brainz so no touch dis
-		//if (/^https?:\/\/(?:www\.)?(tenor\.com|giphy\.com)\//i.test(trimmed)) return;
-		if (message.channelId !== channelAlways || ignore.test(message.content) || ignr.test(message.content)) return;
-		if (clear.test(message.content)){
-			history = [{role: "system", content: syspwompt},];
-			tts("mizook has been re-lobotomized.", message.channel, "reply");
-			return;
-		}
-		if (thinkingz) return;
-
-		const tmpmsg = await send(message, "mizook is trying their best to think...");
+		console.log("startin sendin 2 llm");
+		const tmpmsg = send(message, "mizook is trying their best to think...");
 		thinkingz = true;
 
 		content = "<" + message.author.username + "> " + message.content;
@@ -182,7 +174,7 @@ async function send2llm(message){
 
 		// const tmpmsg == await message.channel.send({content: "mizook is thinking..."});;;;
 		history.push({role: "user", content: "<mizook(you)> " + reply});
-		await send(message, reply);
+		send(message, reply);
 		tmpmsg.delete().catch(console.error);
 		thinkingz = false;
 
@@ -196,13 +188,19 @@ async function send2llm(message){
 client.on(Events.MessageCreate, async (message) => {
 	if (message.author.bot) return;
 	const parsed = parsePrefixCommand(message.content, prefix);
-	if (!parsed) return;
-	const {command, args} = parsed;
-	if (message.channel.id === mizookChannel) {
+	let command = "";
+	//let args = "";
+	if (parsed) {command = parsed.command};
+	if (message.channelId === mizookChannel) {
 		// check for commands
 		try {
-			if (!command === "ignore" || !command === "i") {
+			console.log(command, thinkingz);
+			if (!command && !thinkingz) {
+				console.log("calling the function");
 				send2llm(message);
+			} if (command === "clear") {
+				history = [{role: "system", content: syspwompt},];
+				send(message, "mizook has been re-lobotomized.");
 			};
 		} catch (err) {
 			console.error("command error:\n", err);
