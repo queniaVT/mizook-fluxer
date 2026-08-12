@@ -194,7 +194,6 @@ client.on(Events.MessageCreate, async (message) => {
 	if (message.channelId === mizookChannel) {
 		// check for commands
 		try {
-			console.log(command, thinkingz);
 			if (!command && !thinkingz) {
 				send2llm(message);
 			} if (command === "clear") {
