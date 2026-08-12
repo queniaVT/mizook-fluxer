@@ -130,8 +130,7 @@ async function handleRoleChange(reaction, user, add){
 
 async function send2llm(message){
 	try {
-		console.log("startin sendin 2 llm");
-		const tmpmsg = send(message, "mizook is trying their best to think...");
+		const tmpmsg = await message.send("mizook is trying their best to think..." + sig);
 		thinkingz = true;
 
 		const content = "<" + message.author.username + "> " + message.content;
@@ -197,7 +196,6 @@ client.on(Events.MessageCreate, async (message) => {
 		try {
 			console.log(command, thinkingz);
 			if (!command && !thinkingz) {
-				console.log("calling the function");
 				send2llm(message);
 			} if (command === "clear") {
 				history = [{role: "system", content: syspwompt},];
