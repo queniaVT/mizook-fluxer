@@ -14,6 +14,7 @@ import {fileURLToPath} from "node:url";
 import stripAnsi from 'strip-ansi';
 import {exec} from 'child_process';
 
+const ollama = "http://127.0.0.1:11435";
 const env = JSON.parse(fsNormal.readFileSync('./.env', 'utf8'));
 const token = env.token;
 const client = new Client({intents: 0});
