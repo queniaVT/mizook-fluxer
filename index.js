@@ -133,12 +133,12 @@ async function send2llm(message){
 		const tmpmsg = send(message, "mizook is trying their best to think...");
 		thinkingz = true;
 
-		content = "<" + message.author.username + "> " + message.content;
+		const content = "<" + message.author.username + "> " + message.content;
 		if (!content || content.trim().length === 0) return;
 		
 		// optional: fiwteww twiggers or smth idk
 		console.log("Recieved message: " + message.content);
-		console.log("Forwarding to " + llm + ": " + content);
+		console.log("Forwarding to " + model + ": " + content);
 		
 		history.push({role: "user", content: content})
 		if (history.length > 15) history.splice(1, 1);
