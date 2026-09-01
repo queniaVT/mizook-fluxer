@@ -13,6 +13,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import stripAnsi from 'strip-ansi';
 import {exec} from 'child_process';
+import http from 'http';
 
 const ollama = "http://127.0.0.1:11435";
 const env = JSON.parse(fsNormal.readFileSync('./.env', 'utf8'));
@@ -64,6 +65,18 @@ const ignore = /!ignore/i;
 const ignr = /!i/i;
 
 const minecraftChannel = "1525586466908930071";
+const server = http.createServer((req, res) => {
+	if (req.method === "GET" && req.url.startsWith("/mc2fluxerThingy")) {
+		const url = new URL(req.url, "http://localhost");
+		const name = url.searchParams.get("message") || "world";
+		const result = mc2fluxerThingy(message);
+		res.writeHead(200, { "Content-Type": "text/plain" });
+		res.end(result);
+		return;
+	}
+	res.writeHead(404);
+	res.end("Not found");
+});
 
 let thinkingz = false;
 let history = [{role: "system", content: syspwompt},];
@@ -186,6 +199,10 @@ async function send2llm(message){
 		console.error('Handler error:\n', err);
 	}
 }
+
+async function mc2fluxerThingy(message) {
+	await client.channels.send(minecraftChannel, message);
+};
 
 client.on(Events.MessageCreate, async (message) => {
 	if (message.author.bot) return;
