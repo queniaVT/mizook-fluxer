@@ -135,7 +135,7 @@ async function send2llm(message){
 		const tmpmsg = await message.send("mizook is trying their best to think..." + sig);
 		thinkingz = true;
 
-		const content = "<" + message.author.username + "> " + message.content;
+		const content = "<" + message.author.globalName + "> " + message.content;
 		if (!content || content.trim().length === 0) return;
 		
 		// optional: fiwteww twiggers or smth idk
@@ -194,7 +194,8 @@ client.on(Events.MessageCreate, async (message) => {
 	//let args = "";
 	if (parsed) {command = parsed.command};
 	if (message.channelId === minecraftChannel) {
-		exec(`/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd "say <`+message.author.username+"> "+message.content+`"`, (err, stdout, stderr) => {
+		if (message.attachments) {console.log(message.attachments)};
+		exec(`/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd "say <`+message.author.globalName+"> "+message.content+`"`, (err, stdout, stderr) => {
 			if (err) {reply(message, "failed to forward message to minecraft");};
 		});
 	};
