@@ -199,7 +199,7 @@ client.on(Events.MessageCreate, async (message) => {
 		else {attachments = ""}
 		const payload = "<"+message.author.gloalName+"> "+message.content+"\n("+attachments+")"
 		conosle.log(payload);
-		exec(`/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd "say `+payload (err, stdout, stderr) => {
+		exec(`/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd "say `+payload, (err, stdout, stderr) => {
 			if (err) {reply(message, "failed to forward message to minecraft");};
 		});
 	};
