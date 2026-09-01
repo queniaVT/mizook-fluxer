@@ -194,7 +194,8 @@ client.on(Events.MessageCreate, async (message) => {
 	//let args = "";
 	if (parsed) {command = parsed.command};
 	if (message.channelId === minecraftChannel) {
-		exec(`/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd "say `, message.content, `"`, (err, stdout, stderr) => {
+		console.log(message.content);
+		exec(`/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd "say `+message.content+`"`, (err, stdout, stderr) => {
 			if (err) {reply(message, "failed to forward message to minecraft");};
 		});
 	};
