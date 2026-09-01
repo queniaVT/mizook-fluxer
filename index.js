@@ -197,7 +197,7 @@ client.on(Events.MessageCreate, async (message) => {
 		let attachments = ""
 		if (message.attachments) {attachments = message.attachments.first().filename}
 		else {attachments = ""}
-		exec(`/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd "say <`+message.author.globalName+`> `+message.content+`\n`+attachments+`"` (err, stdout, stderr) => {
+		exec(`/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd "say <`+message.author.globalName+`> `+message.content+` `+attachments+`"` (err, stdout, stderr) => {
 			if (err) {reply(message, "failed to forward message to minecraft");};
 		});
 	};
