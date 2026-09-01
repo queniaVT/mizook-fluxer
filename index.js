@@ -63,6 +63,8 @@ const syspwompt = `You are mizook. mizook is a chaotic gremlin that lives on dis
 const ignore = /!ignore/i;
 const ignr = /!i/i;
 
+const minecraftChannel = "1525586466908930071";
+
 let thinkingz = false;
 let history = [{role: "system", content: syspwompt},];
 let store = {}; // { guildId: { messageId: { emoji: roleId, ... }, ... }, ... }
@@ -191,6 +193,11 @@ client.on(Events.MessageCreate, async (message) => {
 	let command = "";
 	//let args = "";
 	if (parsed) {command = parsed.command};
+	if (message.channelId === minecraftChannel) {
+		exec(`/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd "say `, message.content, `"`, (err, stdout, stderr) => {
+			if (err) {reply(message, "failed to forward message to minecraft");};
+		});
+	};
 	if (message.channelId === mizookChannel) {
 		// check for commands
 		try {
