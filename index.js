@@ -194,8 +194,9 @@ client.on(Events.MessageCreate, async (message) => {
 	//let args = "";
 	if (parsed) {command = parsed.command};
 	if (message.channelId === minecraftChannel) {
-		const attachments = message.attachments?.first()?.filename ?? null;
-		const payload = "<"+message.author.globalName+"> "+message.content+" ("+attachments+")"
+		const attachments = " ("+message.attachments?.first()?.filename+")" ?? null;
+		const payload = "<"+message.author.globalName+"> "+message.content
+		if (attachments) {payload = payload+attachments};
 		console.log("forwarding to minecraft chat: "+payload);
 		exec(`/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd "say `+payload+`"`, (err, stdout, stderr) => {
 			if (err) {reply(message, "failed to forward message to minecraft");};
