@@ -66,9 +66,9 @@ const ignr = /!i/i;
 
 const minecraftChannel = "1525586466908930071";
 const server = http.createServer((req, res) => {
-	if (req.method === "GET" && req.url.startsWith("/mc2fluxerThingy")) {
+	if (req.method === "GET") {
 		const url = new URL(req.url, "http://localhost");
-		const name = url.searchParams.get("message") || "world";
+		const name = url.searchParams.get("msg");
 		const result = mc2fluxerThingy(message);
 		res.writeHead(200, { "Content-Type": "text/plain" });
 		res.end(result);
