@@ -229,7 +229,7 @@ async function send2llm(message){
 }
 
 async function mc2fluxerThingy(player, message){
-	const payload = "<"+player+"> "+ (message.trim().endsWith(":3") ? message.trim() : message.trim() + ":3");
+	const payload = "<"+player+"> "+ (message.trim().endsWith(":3") ? message.trim() : message.trim() + " :3");
 	console.log("forwarding to fluxer: "+payload);
 	await client.channels.send(minecraftChannel, payload);
 };
