@@ -228,8 +228,9 @@ async function send2llm(message){
 	}
 }
 
-async function mc2fluxerThingy(player, message) {
-	const payload = "<"+player+"> "+message
+async function mc2fluxerThingy(player, message){
+	const payload = "<"+player+"> "+message.trim();
+	if (!payload.endsWith(":3")){payload = payload+":3"};
 	console.log("forwarding to fluxer: "+payload);
 	await client.channels.send(minecraftChannel, payload);
 };
@@ -239,10 +240,10 @@ client.on(Events.MessageCreate, async (message) => {
 	const parsed = parsePrefixCommand(message.content, prefix);
 	let command = "";
 	//let args = "";
-	if (parsed) {command = parsed.command};
-	if (message.channelId === minecraftChannel) {
+	if (parsed){command = parsed.command};
+	if (message.channelId === minecraftChannel){
 		const attachments = message.attachments?.first()?.filename;
-		let payload = "<"+message.author.globalName+"> "+message.content
+		let payload = "<"+message.author.globalName+"> "+message.content;
 		if (attachments) {payload += " ("+attachments+")"};
 		console.log("forwarding to mc chat: " + payload);
 		exec(`/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd 'tellraw @a ["`+payload+`"]'`, (err, stdout, stderr) => {
