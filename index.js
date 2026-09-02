@@ -66,21 +66,49 @@ const ignr = /!i/i;
 
 const minecraftChannel = "1525586466908930071";
 const server = http.createServer((req, res) => {
-	if (req.method === "GET") {
-		const url = new URL(req.url, "http://localhost");
-		const name = url.searchParams.get("msg");
-		const result = mc2fluxerThingy(message);
-		res.writeHead(200, { "Content-Type": "text/plain" });
-		res.end(result);
+	if (req.method !== "POST" || req.url !== "/player-message") {
+		res.writeHead(404);
+		res.end();
 		return;
 	}
-	res.writeHead(404);
-	res.end("Not found");
+	let body = "";
+	req.on("data", chunk => {
+		body += chunk;
+	});
+	req.on("end", async () => {
+		try {
+			const data = JSON.parse(body);
+			const result = await mc2fluxerThingy(
+				data.player,
+				data.message
+			);
+			res.writeHead(200, {
+				"Content-Type": "application/json"
+			});
+			res.end(JSON.stringify({
+				ok: true,
+				result: result ?? null
+			}));
+		} catch (error) {
+			console.error("minecraft is being stoopid do something about it: ", error);
+			res.writeHead(500, {
+				"Content-Type": "application/json"
+			});
+			res.end(JSON.stringify({
+				ok: false,
+				error: error.message
+			}));
+		}
+	});
 });
 
 let thinkingz = false;
 let history = [{role: "system", content: syspwompt},];
 let store = {}; // { guildId: { messageId: { emoji: roleId, ... }, ... }, ... }
+
+server.listen(3000, "127.0.0.1", () => {
+	console.log("mc message server listening on port 3000");
+});
 
 client.on(Events.MessageReactionAdd, async (payload) => {
 	handleRoleChange(payload.reaction, payload.user, true);
@@ -200,8 +228,10 @@ async function send2llm(message){
 	}
 }
 
-async function mc2fluxerThingy(message) {
-	await client.channels.send(minecraftChannel, message);
+async function mc2fluxerThingy(player, message) {
+	const payload = "<"+player+"> "+message
+	console.log("forwarding to fluxer: "+payload);
+	await client.channels.send(minecraftChannel, payload);
 };
 
 client.on(Events.MessageCreate, async (message) => {
