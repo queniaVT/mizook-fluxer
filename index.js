@@ -103,7 +103,7 @@ const server = http.createServer((req, res) => {
 });
 
 let thinkingz = false;
-let history = [{role: "system", content: syspwompt},];
+let history = [];
 let store = {}; // { guildId: { messageId: { emoji: roleId, ... }, ... }, ... }
 
 server.listen(3000, "127.0.0.1", () => {
