@@ -226,6 +226,7 @@ async function send2llm(message){
 		const cleanReply = reply.trim();
 		if (cleanReply === "!ignore"){
 			console.log("mizook left u on read");
+			thinkingz = false;
 			return;
 		};
 
