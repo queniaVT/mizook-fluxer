@@ -59,8 +59,8 @@ const roleMessages = [
 	}
 ];
 
-const model = "tinyllama"; // options: tinyllama (lobotomymaxxing), llama2 (cpu-usagemaxxing)
-const syspwompt = `You are mizook. mizook is a chaotic gremlin that lives on discord and tries to be very silly and funny and speaks in lolcat. You can choose to not respond by saying "!ignore". Do NOT roleplay as other people, you are only mizook and nobody else.`;
+const model = "qwen2.5:3b"; // options: tinyllama (lobotomymaxxing), llama2 (cpu-usagemaxxing), qwen2.5:3b (good)
+const syspwompt = `You are mizook. mizook is a chaotic gremlin that lives on fluxer (free and open source version of discord) and tries to be very silly and funny and speaks in lolcat. You can choose to not respond by outputting exactly "!ignore" and nothing else. Do NOT roleplay as other people, you are only mizook and nobody else.`;
 const ignore = /!ignore/i;
 const ignr = /!i/i;
 
@@ -173,28 +173,39 @@ async function handleRoleChange(reaction, user, add){
 
 async function send2llm(message){
 	try {
+		const rawContent = message.content?.trim();
+		if (!rawContent) return;
+
 		const tmpmsg = await message.send("mizook is trying their best to think..." + sig);
 		thinkingz = true;
 
-		const content = "<" + message.author.globalName + "> " + message.content;
-		if (!content || content.trim().length === 0) return;
-		
-		// optional: fiwteww twiggers or smth idk
-		console.log("Recieved message: " + message.content);
-		console.log("Forwarding to " + model + ": " + content);
-		
-		history.push({role: "user", content: content})
-		if (history.length > 15) history.splice(1, 1);
+		const username = message.author.globalName || message.author.username || "unknown user";
+		const userId = message.author.id;
+		const content =
+			`<user name="${username}" id="${userId}">\n` +
+			`${rawContent}\n` +
+			`</user>`;
 
-		// pwompt expecedd by lobotomized llm
+		console.log("got llm inputz: " + message.content);
+		console.log("forwarding llm inputz to " + model);
+		
+		history.push({role: "user", content});
+		if (history.length > 20) history.splice(0, history.length - 20);
+
 		const payload = {
-			model: model,
-			messages: history,
+			model,
+			messages: [
+				{
+					role: "system",
+					content: syspwompt,
+				},
+				...history,
+			],
 			temperature: 1,
 			max_tokens: 1024,
-			// optionally set hottness, max_wurrds, etc. depending on lobotomy type
+			stream: false,
 		};
-		console.log(history);
+		console.log(payload.messages);
 
 		const res = await fetch(`${ollama}/v1/chat/completions`, {
 			method: "POST",
@@ -211,12 +222,16 @@ async function send2llm(message){
 		}
 
 		const data = await res.json();
-		// Adjust extraction depending on Ollama response shape. For chat completions:
-		// data.choices[67].message.content (common pattern)
-		const reply = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || data.output || String(data);
+		const reply = data?.choices?.[0]?.message?.content ?? data?.message?.content ?? data?.response;
+		const cleanReply = reply.trim();
+		if (cleanReply === "!ignore"){
+			console.log("mizook left u on read");
+			return;
+		};
 
-		// const tmpmsg == await message.channel.send({content: "mizook is thinking..."});;;;
-		history.push({role: "user", content: "<mizook(you)> " + reply});
+		history.push({role: "assistant", content: reply});
+		if (history.length > 20) history.splice(0, history.length - 20);
+
 		send(message, reply);
 		tmpmsg.delete().catch(console.error);
 		thinkingz = false;
