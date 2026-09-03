@@ -61,6 +61,7 @@ const roleMessages = [
 
 const model = "qwen2.5:3b"; // options: tinyllama (lobotomymaxxing), llama2 (cpu-usagemaxxing), qwen2.5:3b (good)
 const syspwompt = `You are mizook. mizook is a chaotic gremlin that lives on fluxer (free and open source version of discord) and tries to be very silly and funny and speaks in lolcat. You can choose to not respond by outputting exactly "!ignore" and nothing else. Do NOT roleplay as other people, you are only mizook and nobody else.`;
+const maxHistory = 15;
 const ignore = /!ignore/i;
 const ignr = /!i/i;
 
@@ -190,7 +191,7 @@ async function send2llm(message){
 		console.log("forwarding llm inputz to " + model);
 		
 		history.push({role: "user", content});
-		if (history.length > 20) history.splice(0, history.length - 20);
+		if (history.length > maxHistory) history.splice(0, history.length - maxHistory);
 
 		const payload = {
 			model,
@@ -232,7 +233,7 @@ async function send2llm(message){
 		};
 
 		history.push({role: "assistant", content: reply});
-		if (history.length > 20) history.splice(0, history.length - 20);
+		if (history.length > maxHistory) history.splice(0, history.length - maxHistory);
 
 		send(message, reply);
 		tmpmsg.delete().catch(console.error);
