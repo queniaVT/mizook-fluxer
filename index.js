@@ -202,7 +202,7 @@ async function send2llm(message){
 				},
 				...history,
 			],
-			temperature: 1,
+			temperature: 0.67,
 			max_tokens: 1024,
 			stream: false,
 		};
