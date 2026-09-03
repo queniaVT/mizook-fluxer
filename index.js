@@ -270,7 +270,7 @@ client.on(Events.MessageCreate, async (message) => {
 			if (!command && !thinkingz) {
 				send2llm(message);
 			} if (command === "clear") {
-				history = [{role: "system", content: syspwompt},];
+				history = [];
 				send(message, "mizook has been re-lobotomized.");
 			};
 		} catch (err) {
