@@ -45,7 +45,7 @@ const roleMessages = [
 	{
 		content: "what games do you wanna discuss?\n<:minecraft:1526056839312052224> - minecraft\n<:tf2:1550212651701764096> - team fortress 2\nyou can suggest more games in the council :3",
 		mapping: {
-			"<:minecraft:1526056839312052224>": "1525586466908930049"
+			"<:minecraft:1526056839312052224>": "1525586466908930049",
 			"<:tf2:1550212651701764096>": "1550212390270795776"
 		}
 	},
