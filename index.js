@@ -43,9 +43,10 @@ const roleMessages = [
 		mapping: {"✅": "1525586466908930050"} // mizook enjoyer
 	},
 	{
-		content: "what games do you wanna discuss?\n<:minecraft:1526056839312052224> - minecraft\nyou can suggest more games in the council :3",
+		content: "what games do you wanna discuss?\n<:minecraft:1526056839312052224> - minecraft\n<:tf2:1550212651701764096> - team fortress 2\nyou can suggest more games in the council :3",
 		mapping: {
 			"<:minecraft:1526056839312052224>": "1525586466908930049"
+			"<:tf2:1550212651701764096>": "1550212390270795776"
 		}
 	},
 	{
