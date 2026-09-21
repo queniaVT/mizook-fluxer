@@ -50,8 +50,9 @@ const roleMessages = [
 		}
 	},
 	{
-		content: "u can chooze ur labelz heer\n<:bisexual:1525588214352449536> - bisexual\n<:femboy:1525588214352449537> - femboy\n<:lesbian:1525588214352449538> - lesbian\n<:transgender:1525588214352449539> - transgender\nif ur label iznt heer u can suggest it in da council :3",
+		content: "u can chooze ur labelz heer\n<:asexual:1551607788654833664> - asexual\n<:bisexual:1525588214352449536> - bisexual\n<:femboy:1525588214352449537> - femboy\n<:lesbian:1525588214352449538> - lesbian\n<:transgender:1525588214352449539> - transgender\nif ur label iznt heer u can suggest it in da council :3",
 		mapping: {
+			":asexual:1551607788654833664": "1551607606403928064",
 			"<:bisexual:1525588214352449536>": "1525586466908930055",
 			"<:femboy:1525588214352449537>": "1525586466908930054",
 			"<:lesbian:1525588214352449538>": "1525586466908930053",
