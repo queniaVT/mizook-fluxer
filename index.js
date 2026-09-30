@@ -128,7 +128,6 @@ client.on(Events.Ready, async () => {
 
 async function loadStore(){try {store = JSON.parse(await fs.readFile(storage, 'utf8'));} catch {store = {};}}
 async function saveStore(){await fs.writeFile(storage, JSON.stringify(store, null, 2));}
-function emojiKeyFromEmojiObj(e){return e.id ? `<:${e.name}:${e.id}>` : e.name;} // when is this even called
 
 async function send(message, text) {await message.send(text + sig);};
 async function reply(message, text) {await message.reply(text + sig);};
@@ -262,7 +261,7 @@ client.on(Events.MessageCreate, async (message) => {
 	if (parsed){command = parsed.command};
 	if (message.channelId === minecraftChannel){
 		const attachments = message.attachments?.first()?.filename;
-		let payload = "<"+message.author.globalName+"> "+message.content;
+		let payload = "<"+message.author.globalName+"> "+message.content+" :3";
 		if (attachments) {payload += " ("+attachments+")"};
 		console.log("forwarding to mc chat: " + payload);
 		exec(`/run/current-system/sw/bin/mcrcon -H localhost -P 25585 -p mcservurrpasswd 'tellraw @a ["`+payload+`"]'`, (err, stdout, stderr) => {
