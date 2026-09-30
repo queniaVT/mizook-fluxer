@@ -265,7 +265,7 @@ client.on(Events.MessageCreate, async (message) => {
 		let payload = "<"+message.author.globalName+"> "+message.content;
 		if (attachments) {payload += " ("+attachments+")"};
 		console.log("forwarding to mc chat: " + payload);
-		exec(`/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd 'tellraw @a ["`+payload+`"]'`, (err, stdout, stderr) => {
+		exec(`/run/current-system/sw/bin/mcrcon -H localhost -P 25585 -p mcservurrpasswd 'tellraw @a ["`+payload+`"]'`, (err, stdout, stderr) => {
 			if (err) {reply(message, "failed to forward message to minecraft");};
 		});
 	};
@@ -301,7 +301,7 @@ client.on(Events.MessageCreate, async (message) => {
 			};
 			if (command === "restart") {
 				console.log("command used: /restart");
-				exec("/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd list | grep -oP 'There are \\K\\d+'", (err, stdout, stderr) => {
+				exec("/run/current-system/sw/bin/mcrcon -H localhost -P 25585 -p mcservurrpasswd list | grep -oP 'There are \\K\\d+'", (err, stdout, stderr) => {
 					if (err) {
 						console.log("mcrcon list: exec error:\n", err);
 						reply(message, "something got fucked up");
@@ -321,7 +321,7 @@ client.on(Events.MessageCreate, async (message) => {
 			};
 			if (command === "stop") {
 				console.log("command used: /stop");
-				exec("/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd list | grep -oP 'There are \\K\\d+'", (err, stdout, stderr) => {
+				exec("/run/current-system/sw/bin/mcrcon -H localhost -P 25585 -p mcservurrpasswd list | grep -oP 'There are \\K\\d+'", (err, stdout, stderr) => {
 					if (err) {
 						console.log("mcrcon list: exec error:\n", err);
 						reply(message, "something got fucked up");
@@ -347,7 +347,7 @@ client.on(Events.MessageCreate, async (message) => {
 						reply(message, "something got fucked up");
 					} else {
 						const out = stdout.trim().slice(8);
-						exec("/run/current-system/sw/bin/mcrcon -H localhost -P 25575 -p mcservurrpasswd list | sed -n 's/.*: //p'", (err, stdout, stderr) => {
+						exec("/run/current-system/sw/bin/mcrcon -H localhost -P 25585 -p mcservurrpasswd list | sed -n 's/.*: //p'", (err, stdout, stderr) => {
 							if (err) {
 								console.log("mcrcon list: exec error:\n", err);
 								reply(message, "something got fucked up");
